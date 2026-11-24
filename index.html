@@ -7,7 +7,7 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
         body { background: #0f172a; color: #f8fafc; padding-bottom: 40px; }
-        header { background: #1e293b; border-bottom: 1px solid #334155; padding: 22px 20px; text-align: center; }
+        header { background: #1e293b; border-bottom: 1px solid #334155; padding: 20px; text-align: center; }
         header h1 { color: #38bdf8; font-size: 28px; margin-bottom: 6px; }
         header p { color: #94a3b8; font-size: 14px; }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
@@ -68,6 +68,10 @@
             filtrar();
         }
 
+        function formatoPesoCatalogo(valor) {
+            return "$ " + Math.round(Number(valor) || 0).toLocaleString("es-AR");
+        }
+
         function filtrar() {
             const txt = document.getElementById('q').value.toLowerCase().trim();
             const grid = document.getElementById('grid');
@@ -90,6 +94,7 @@
                 const stockClass = p.stock > 5 ? "stock-ok" : "stock-low";
                 const imgTag = p.foto ? '<img src="' + p.foto + '" alt="' + p.nombre + '">' : '<span class="sin-foto">Sin imagen</span>';
                 const condClass = p.condicion === "Usado" ? "usado" : "nuevo";
+                const precioFormateado = formatoPesoCatalogo(p.precio);
 
                 const card = document.createElement('div');
                 card.className = 'card';
@@ -99,14 +104,14 @@
                         '<div class="title">' + p.nombre + '</div>' +
                         '<div class="desc">' + (p.descripcion || '') + '</div>' +
                         '<div class="meta">' +
-                            '<div class="price">$' + p.precio.toFixed(2) + '</div>' +
+                            '<div class="price">' + precioFormateado + '</div>' +
                             '<div class="' + stockClass + '">' + stockTxt + '</div>' +
                         '</div>' +
                         '<button type="button" class="btn-wsp">💬 Consultar por WhatsApp</button>' +
                     '</div>';
 
                 card.querySelector('.btn-wsp').onclick = function() {
-                    const msg = encodeURIComponent("Hola! Quiero consultar por: " + p.nombre + " ($" + p.precio.toFixed(2) + ")");
+                    const msg = encodeURIComponent("Hola! Quiero consultar por: " + p.nombre + " (" + precioFormateado + ")");
                     const base = "https:" + "//" + "api." + "whatsapp" + ".com/send";
                     const destino = TEL_WSP ? base + "?phone=" + TEL_WSP + "&text=" + msg : base + "?text=" + msg;
                     window.open(destino, "_blank");
